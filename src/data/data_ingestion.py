@@ -6,6 +6,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 from src.features import build_features
+from src.models import train_model 
 
 @dataclass
 class DataIngestionConfig:
@@ -39,4 +40,7 @@ if __name__ == "__main__":
  obj = DataIngestion()
  train_data,test_data = obj.initiate_data_ingestion()
  dataTransformation = build_features.DataTransformation()
- dataTransformation.initiate_data_transformation(train_data,test_data)  
+ train_arr,test_arr,_ = dataTransformation.initiate_data_transformation(train_data,test_data)
+ train = train_model.ModelTrainer()
+ print(train.initiate_model_trainer(train_array=train_arr, test_array=test_arr))
+ 

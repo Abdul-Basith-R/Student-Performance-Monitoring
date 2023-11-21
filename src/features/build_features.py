@@ -19,40 +19,53 @@ class DataTransformation:
         self.dataTransformationConfig = DataTransformationConfig()
 
     def get_data_transformer_object(self):
+        '''
+        This function si responsible for data trnasformation
+        
+        '''
         try:
-            numerical_columns = ['reading_score', 'writing_score']
-            categorical_columns = ['gender', 'race_ethnicity', 'parental_level_of_education', 'lunch',
-       'test_preparation_course']
-            numerical_pipeline = Pipeline(
+            numerical_columns = ["writing_score", "reading_score"]
+            categorical_columns = [ 
+                "gender",
+                "race_ethnicity",
+                "parental_level_of_education",
+                "lunch",
+                "test_preparation_course",
+            ]
+
+            num_pipeline= Pipeline(
                 steps=[
-                    (
-                        "Imputer",SimpleImputer(strategy="median")
-                    ),
-                    (
-                        "scaler",StandardScaler()
-                    )]
-                )
-            logging.info("Numerical Columns Standard Scaling Completed")
-            categorical_pipeline = Pipeline(
-                steps=[(
-                    "imputer",SimpleImputer(strategy="most_frequent")
-                ),
-                (
-                    "one_hot_encoder",OneHotEncoder()
-                ),
-                (
-                    "scaler",StandardScaler()
-                )]
+                ("imputer",SimpleImputer(strategy="median")),
+                ("scaler",StandardScaler())
+
+                ]
             )
-            logging.info("Categorical Column Encoding Completed")
+
+            cat_pipeline=Pipeline(
+
+                steps=[
+                ("imputer",SimpleImputer(strategy="most_frequent")),
+                ("one_hot_encoder",OneHotEncoder()),
+                ("scaler",StandardScaler(with_mean=False))
+                ]
+
+            )
+
+            logging.info(f"Categorical columns: {categorical_columns}")
+            logging.info(f"Numerical columns: {numerical_columns}")
+
+            preprocessor=ColumnTransformer(
+                [
+                ("num_pipeline",num_pipeline,numerical_columns),
+                ("cat_pipelines",cat_pipeline,categorical_columns)
+
+                ]
 
 
-            preprocessor=ColumnTransformer([
-                ("num_pipeline",numerical_pipeline,numerical_columns),
-                ("cat_pipeline",categorical_pipeline,categorical_columns)
-            ])
+            )
 
             return preprocessor
+        
         except Exception as e:
             print(e)
             
@@ -92,3 +105,4 @@ class DataTransformation:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(exc_type, fname, exc_tb.tb_lineno)
+            print(e)
