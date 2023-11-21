@@ -4,8 +4,6 @@ from dataclasses import dataclass
 from catboost import CatBoostRegressor
 from sklearn.ensemble import AdaBoostRegressor,RandomForestRegressor,GradientBoostingRegressor
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor 
 from xgboost import XGBRFRegressor
 
@@ -35,12 +33,49 @@ class ModelTrainer:
                 "Gradient Boosting":GradientBoostingRegressor(),
                 "CatBoost Regressor":CatBoostRegressor(),
                 "Linear Regression": LinearRegression(),
-                "K nearest neighbour":KNeighborsRegressor(),
                 "Decision Tree Regressor": DecisionTreeRegressor(),
                 "XGboost":XGBRFRegressor()
             }
 
-            model_performance:dict = evaluate(xtrain=X_train,ytrain=y_train,xtest=X_test,ytest=y_test,models=models)
+            params = {
+                "Decision Tree Regressor":{
+                    'criterion':['squared_error','friedman_mse','absolute_error','poisson'],
+                    'splitter':['best','random'],
+                    'max_features':['sqrt','log2'],
+                },
+                'Random Forest':{
+                    'criterion': ['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
+                    'max_features': ['sqrt', 'log2'],
+                    'n_estimators':[8,16,32,64,128,256]
+                },
+                'Gradient Boosting':{
+                    'loss':['squared_error','huber','absolute error','quantile'],
+                    'learning_rate': [0.1,0.01,0.05,0.001],
+                    'subsample': [0.6,0.7,0.8,0.75,0.85,0.9],
+                    'criterion':['squared_error', 'friedman_mse'],
+                    'max_features': ['sqrt', 'log2'],
+                    'n_estimators': [8, 16, 32, 64, 128, 256]
+
+                },
+                "Linear Regression": {},
+                "XGboost":{
+                    'learning_rate': [0.1, 0.01, 0.05, 0.001],
+                    'n_estimators': [8, 16, 32, 64, 128, 256]
+                },
+                "CatBoost Regressor":{
+                    'depth':[6,10,8],
+                    'learning_rate': [0.1, 0.01, 0.05, 0.001],
+                    'iterations': [30, 50, 100]
+                },
+                "AdaBoost Regressor":{
+                    'learning_rate': [0.1, 0.01, 0.05, 0.001],
+                    'loss':['linear','square','exponential'],
+                    'n_estimators': [8, 16, 32, 64, 128, 256]
+                }
+            }
+
+            model_performance: dict = evaluate(
+                xtrain=X_train, ytrain=y_train, xtest=X_test, ytest=y_test, models=models, params=params)
 
             best_model_score = max(sorted(model_performance.values()))
 

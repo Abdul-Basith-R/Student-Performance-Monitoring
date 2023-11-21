@@ -42,5 +42,5 @@ if __name__ == "__main__":
  dataTransformation = build_features.DataTransformation()
  train_arr,test_arr,_ = dataTransformation.initiate_data_transformation(train_data,test_data)
  train = train_model.ModelTrainer()
- print(train.initiate_model_trainer(train_array=train_arr, test_array=test_arr))
+ print(train.initiate_model_trainer(train_array=train_arr,test_array=test_arr))
  

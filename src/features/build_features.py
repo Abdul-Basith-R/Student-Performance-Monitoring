@@ -58,16 +58,17 @@ class DataTransformation:
                 [
                 ("num_pipeline",num_pipeline,numerical_columns),
                 ("cat_pipelines",cat_pipeline,categorical_columns)
-
                 ]
-
-
             )
 
             return preprocessor
         
         except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
             print(e)
+
             
     def initiate_data_transformation(self,train_path,test_path):
         try:
